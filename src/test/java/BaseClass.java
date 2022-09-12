@@ -1,8 +1,13 @@
 import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
+//import io.appium.java_client.android.AndroidDriver;
+//import io.appium.java_client.remote.MobileCapabilityType;
+//import jcactus.Device;
+import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
-import jcactus.Device;
+import io.appium.java_client.remote.MobilePlatform;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import io.testproject.sdk.drivers.android.AndroidDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import screens.onboarding.UsefulMap;
@@ -21,24 +26,21 @@ public class BaseClass {
     WhatIsLoyalty whatIsLoyalty;
 
     @BeforeClass
-    public void setup() {
+    public void setup() throws Exception {
         try {
-            DesiredCapabilities caps = new DesiredCapabilities();
+            DesiredCapabilities capabilities = new DesiredCapabilities();
 
-            Device device = new Device("pixel");
+//            Device device = new Device("pixel");
 
-            caps.setCapability(MobileCapabilityType.DEVICE_NAME, device.getDeviceName());
-            caps.setCapability(MobileCapabilityType.UDID, device.getUdid());
-            caps.setCapability(MobileCapabilityType.PLATFORM_NAME, device.getPlatformName());
-            caps.setCapability(MobileCapabilityType.PLATFORM_VERSION, device.getPlatformVersion());
-            caps.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 60);
-
-            caps.setCapability("appPackage", "com.poleznygorod.cityplusone");
-            caps.setCapability("appActivity", "com.poleznygorod.cityplusone.StartActivity");
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, MobilePlatform.ANDROID);
+            capabilities.setCapability(MobileCapabilityType.UDID, "UDID_DEVICE_HERE");
+            capabilities.setCapability(CapabilityType.BROWSER_NAME, "");
+            capabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, "com.poleznygorod.cityplusone");
+            capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, "com.poleznygorod.cityplusone.StartActivity");
 
             URL url = new URL("http://127.0.0.1:4723/wd/hub");
 
-            driver = new AndroidDriver<MobileElement>(url, caps);
+            driver = new AndroidDriver<>(capabilities, "Svyatoslav Novikov");   // Если нужно, токен можно указать тут, первым параметром
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         } catch(Exception exp) {
             System.out.println("Cause is: " + exp.getCause());
@@ -49,6 +51,9 @@ public class BaseClass {
         useful = new UsefulMap(driver);
         whyUseful = new WhyMapSoUseful(driver);
         whatIsLoyalty = new WhatIsLoyalty(driver);
+
+        GeneratedUtils.sleep(500);
+        driver.resetApp();
     }
 
     @AfterClass
